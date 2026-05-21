@@ -14,6 +14,7 @@ interface Props {
   /** "page" = one flat PDF page at a time, "scroll" = continuous vertical scroll */
   mode: "page" | "scroll";
   zoom?: number;
+  sfxVolume?: number;
 }
 
 const MAX_WIDTH = 760;
@@ -32,6 +33,7 @@ export function FlatPdfViewer({
   onLoadError,
   mode,
   zoom = 1,
+  sfxVolume = 0.5,
 }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const prevPageRef = useRef(page);
@@ -54,12 +56,16 @@ export function FlatPdfViewer({
   useEffect(() => {
     const a = new Audio("/page-flip.mp3");
     a.preload = "auto";
-    a.volume = 0.5;
+    a.volume = sfxVolume;
     audioRef.current = a;
     return () => {
       audioRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = sfxVolume;
+  }, [sfxVolume]);
 
   function playFlip() {
     const a = audioRef.current;
@@ -73,12 +79,13 @@ export function FlatPdfViewer({
     }
   }
 
-  // Page transitions: in page mode play sound; in scroll mode jump to section.
+  // Forward (next page) plays sound; backward (previous page) is silent.
   useEffect(() => {
     if (page === prevPageRef.current) return;
+    const forward = page > prevPageRef.current;
     prevPageRef.current = page;
     if (mode === "page") {
-      playFlip();
+      if (forward) playFlip();
     } else if (mode === "scroll") {
       const el = containerRef.current?.querySelector<HTMLElement>(`[data-page="${page}"]`);
       if (el) {
