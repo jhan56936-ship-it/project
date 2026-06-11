@@ -826,7 +826,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { WebSocketServer } from "ws";
-import { RoomManager, MAX_PLAYERS } from "./rooms.js";
+import { RoomManager } from "./rooms.js";
 import { validate, sanitizeNick } from "./protocol.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -859,15 +859,13 @@ wss.on("connection", (ws) => {
     const now = Date.now();
 
     if (msg.type === "join" && !room) {
-      let r;
-      if (msg.mode === "quick") r = rooms.quickJoin();
-      else if (msg.mode === "create") r = rooms.create();
-      else {
-        const res = rooms.join(String(msg.code).trim());
-        if (res.error) return send(ws, { type: "error", error: res.error });
-        r = res.room;
-      }
-      if (r.clients.size >= MAX_PLAYERS) return send(ws, { type: "error", error: "full" });
+      // quickJoin/create/join 모두 { room } 또는 { error } 반환 (정원·코드 고갈 검사는 RoomManager 책임)
+      let res;
+      if (msg.mode === "quick") res = rooms.quickJoin();
+      else if (msg.mode === "create") res = rooms.create();
+      else res = rooms.join(String(msg.code).trim());
+      if (res.error) return send(ws, { type: "error", error: res.error });
+      const r = res.room;
       playerId = crypto.randomUUID().slice(0, 8);
       room = r;
       room.clients.set(playerId, ws);
