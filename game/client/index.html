@@ -1,1 +1,81 @@
-<!doctype html><html><body>BLOCK RIVALS — building...</body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLOCK RIVALS</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; font-family: 'Trebuchet MS', sans-serif; }
+    body { overflow: hidden; background: #111; }
+    canvas { display: block; }
+    .hidden { display: none !important; }
+    #menu { position: fixed; inset: 0; background: linear-gradient(160deg, #1a2440, #3b1f4e);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #fff; z-index: 30; }
+    #menu h1 { font-size: 52px; letter-spacing: 4px; text-shadow: 0 4px 0 #000; }
+    #menu input { padding: 12px 16px; font-size: 18px; border-radius: 8px; border: none; width: 240px; text-align: center; }
+    #menu button { padding: 12px 28px; font-size: 18px; border-radius: 8px; border: none; cursor: pointer;
+      background: #f5c542; font-weight: bold; }
+    #menu button:hover { background: #ffd95e; }
+    #menu .row { display: flex; gap: 8px; }
+    #weaponPick { display: flex; gap: 8px; }
+    #weaponPick button { background: #2c3e63; color: #fff; font-size: 14px; padding: 10px 14px; }
+    #weaponPick button.sel { background: #f5c542; color: #000; }
+    #menuError { color: #ff8080; min-height: 20px; }
+    #hud { position: fixed; inset: 0; pointer-events: none; z-index: 20; color: #fff; }
+    #crosshair { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 22px; }
+    #scores { position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      font-size: 28px; font-weight: bold; background: rgba(0,0,0,.45); padding: 6px 20px; border-radius: 10px; }
+    #scoreRed { color: #ff6b6b; } #scoreBlue { color: #6b9bff; }
+    #roomCode { position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,.45); padding: 6px 12px; border-radius: 8px; }
+    #killfeed { position: absolute; top: 64px; right: 14px; text-align: right; font-size: 14px; }
+    #killfeed div { background: rgba(0,0,0,.45); margin-top: 4px; padding: 4px 10px; border-radius: 6px; }
+    #health { position: absolute; bottom: 18px; left: 18px; font-size: 30px; font-weight: bold; text-shadow: 0 2px 0 #000; }
+    #ammo { position: absolute; bottom: 18px; right: 18px; font-size: 26px; font-weight: bold; text-shadow: 0 2px 0 #000; }
+    #banner { position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+      font-size: 40px; font-weight: bold; text-shadow: 0 3px 0 #000; }
+    #deathOverlay { position: absolute; inset: 0; background: rgba(120,0,0,.35);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; pointer-events: auto; }
+    #deathOverlay h2 { font-size: 36px; text-shadow: 0 3px 0 #000; }
+    #deathWeapons { display: flex; gap: 8px; }
+    #deathWeapons button { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer;
+      background: #2c3e63; color: #fff; font-size: 15px; }
+    #deathWeapons button.sel { background: #f5c542; color: #000; }
+    #scoreboard { position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.75); padding: 16px 24px; border-radius: 12px; min-width: 420px; }
+    #scoreboard table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    #scoreboard td, #scoreboard th { padding: 4px 10px; text-align: left; }
+    #flash { position: absolute; inset: 0; background: rgba(255,0,0,.25); opacity: 0; transition: opacity .25s; }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <h1>BLOCK RIVALS</h1>
+    <input id="nick" maxlength="12" placeholder="닉네임" />
+    <div id="weaponPick"></div>
+    <button id="quickBtn">⚡ 빠른 입장</button>
+    <div class="row">
+      <button id="createBtn">방 만들기</button>
+      <input id="codeInput" maxlength="6" placeholder="방 코드" style="width:120px" />
+      <button id="joinBtn">코드 입장</button>
+    </div>
+    <div id="menuError"></div>
+  </div>
+  <div id="hud" class="hidden">
+    <div id="flash"></div>
+    <div id="crosshair">+</div>
+    <div id="scores"><span id="scoreRed">0</span> : <span id="scoreBlue">0</span></div>
+    <div id="roomCode"></div>
+    <div id="killfeed"></div>
+    <div id="health">100</div>
+    <div id="ammo">30 / 30</div>
+    <div id="banner" class="hidden"></div>
+    <div id="scoreboard" class="hidden"></div>
+    <div id="deathOverlay" class="hidden">
+      <h2 id="deathMsg">사망!</h2>
+      <div>리스폰까지 <span id="respawnTimer">3</span>초 — 무기 변경 가능</div>
+      <div id="deathWeapons"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
