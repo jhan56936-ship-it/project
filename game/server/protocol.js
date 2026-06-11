@@ -13,10 +13,11 @@ export function validate(msg) {
     case "join":
       return ["quick", "create", "join"].includes(msg.mode)
         && sanitizeNick(msg.nick) !== null
-        && (msg.mode !== "join" || typeof msg.code === "string")
+        && (msg.mode !== "join" || (typeof msg.code === "string" && /^\d{4}$/.test(msg.code)))
         && (msg.weapon === undefined || typeof msg.weapon === "string");
     case "input":
-      return isVec3(msg.pos) && isNum(msg.yaw) && isNum(msg.pitch) && typeof msg.anim === "string";
+      return isVec3(msg.pos) && isNum(msg.yaw) && isNum(msg.pitch)
+        && typeof msg.anim === "string" && msg.anim.length <= 16;
     case "shoot":
       return isVec3(msg.origin) && isVec3(msg.dir);
     case "weapon":

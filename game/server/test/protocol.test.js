@@ -9,6 +9,8 @@ describe("sanitizeNick", () => {
   it("rejects empty or non-string", () => {
     expect(sanitizeNick("   ")).toBeNull();
     expect(sanitizeNick(5)).toBeNull();
+    expect(sanitizeNick(null)).toBeNull();
+    expect(sanitizeNick({})).toBeNull();
   });
 });
 
@@ -24,7 +26,10 @@ describe("validate", () => {
     expect(validate(null)).toBe(false);
     expect(validate({ type: "hack" })).toBe(false);
     expect(validate({ type: "join", mode: "join", nick: "x" })).toBe(false);
+    expect(validate({ type: "join", mode: "join", nick: "x", code: "12345" })).toBe(false);
+    expect(validate({ type: "join", mode: "join", nick: "x", code: "abcd" })).toBe(false);
     expect(validate({ type: "input", pos: [0, NaN, 2], yaw: 0, pitch: 0, anim: "run" })).toBe(false);
+    expect(validate({ type: "input", pos: [0, 1, 2], yaw: 0, pitch: 0, anim: "a".repeat(17) })).toBe(false);
     expect(validate({ type: "shoot", origin: [0, 0], dir: [0, 0, 1] })).toBe(false);
   });
 });

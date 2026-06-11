@@ -9,9 +9,11 @@ export class RoomManager {
   }
 
   makeCode() {
-    let code;
-    do { code = String(Math.floor(this.rng() * 9000) + 1000); } while (this.rooms.has(code));
-    return code;
+    for (let i = 0; i < 10000; i++) {
+      const code = String(Math.floor(this.rng() * 9000) + 1000);
+      if (!this.rooms.has(code)) return code;
+    }
+    return null;
   }
 
   getOrCreate(code) {
@@ -21,8 +23,17 @@ export class RoomManager {
     return this.rooms.get(code);
   }
 
-  quickJoin() { return this.getOrCreate("PUBLIC"); }
-  create() { return this.getOrCreate(this.makeCode()); }
+  quickJoin() {
+    const room = this.getOrCreate("PUBLIC");
+    if (room.clients.size >= MAX_PLAYERS) return { error: "full" };
+    return { room };
+  }
+
+  create() {
+    const code = this.makeCode();
+    if (!code) return { error: "full" };
+    return { room: this.getOrCreate(code) };
+  }
 
   join(code) {
     const room = this.rooms.get(code);
