@@ -63,6 +63,22 @@ describe("shooting", () => {
     expect(g.scores[a.team]).toBe(1);
     expect(events.some((e) => e.type === "kill" && e.killer === "a")).toBe(true);
   });
+  it("ignores friendly fire entirely", () => {
+    const g = makeGame();
+    const { a, b } = setupDuel(g);
+    b.team = a.team; // b를 아군으로 만들고 정면에서 사격
+    const events = shootOnce(g, 2000);
+    expect(b.hp).toBe(100);
+    expect(events).toHaveLength(0);
+  });
+  it("dead player cannot shoot", () => {
+    const g = makeGame();
+    const { a, b } = setupDuel(g);
+    a.alive = false;
+    const events = shootOnce(g, 2000);
+    expect(events).toHaveLength(0);
+    expect(b.hp).toBe(100);
+  });
   it("sniper kills in one shot", () => {
     const g = makeGame();
     const { b } = setupDuel(g);

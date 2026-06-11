@@ -35,7 +35,7 @@ export class Game {
 
   spawnPos(team) {
     const list = this.map.spawns[team];
-    return [...list[Math.floor(this.rng() * list.length) % list.length]];
+    return [...list[Math.floor(this.rng() * list.length)]];
   }
 
   addPlayer(id, nick, weapon, now) {
@@ -95,16 +95,17 @@ export class Game {
     p.lastShotAt = now;
 
     const damageBy = new Map();
-    const alive = [...this.players.values()];
+    const allPlayers = [...this.players.values()];
     for (let i = 0; i < w.pellets; i++) {
       const d = this.applySpread(dir, w.spread);
-      const { hitId } = resolveShot(origin, d, id, alive, this.map.blocks, w.range);
+      const { hitId } = resolveShot(origin, d, id, allPlayers, this.map.blocks, w.range);
       if (hitId) damageBy.set(hitId, (damageBy.get(hitId) || 0) + w.damage);
     }
 
     for (const [victimId, dmg] of damageBy) {
       const v = this.players.get(victimId);
       if (!v || !v.alive) continue;
+      if (v.team === p.team) continue; // 팀킬 금지 — 아군 피해 무시
       v.hp = Math.max(0, v.hp - dmg);
       events.push({ type: "hit", victim: victimId, shooter: id, hp: v.hp });
       if (v.hp === 0) {
@@ -115,12 +116,14 @@ export class Game {
         this.scores[p.team] += 1;
         events.push({
           type: "kill", killer: id, killerNick: p.nick, victim: victimId,
-          victimNick: v.nick, weapon: p.weapon, scores: { ...this.scores },
+          victimNick: v.nick, killerTeam: p.team, victimTeam: v.team,
+          weapon: p.weapon, scores: { ...this.scores },
         });
         if (!this.winner && this.scores[p.team] >= WIN_KILLS) {
           this.winner = p.team;
           this.resetAt = now + RESET_MS;
           events.push({ type: "gameover", winner: p.team, scores: { ...this.scores } });
+          break; // 라운드 종료 — 남은 피해 처리 중단
         }
       }
     }
