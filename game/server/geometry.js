@@ -1,4 +1,5 @@
 // 슬랩 기법 ray-vs-AABB. 전방 교차 거리(t>=0) 또는 null.
+// dir는 단위벡터여야 함 — 반환되는 t가 월드 거리와 같아야 range 비교가 성립한다.
 export function rayAABB(origin, dir, min, max) {
   let tmin = 0;
   let tmax = Infinity;
