@@ -1,0 +1,6 @@
+{
+  "rifle":   { "name": "돌격소총", "damage": 20,  "fireDelayMs": 150,  "magazine": 30, "reloadMs": 1800, "pellets": 1, "spread": 0.012, "range": 150, "auto": true },
+  "shotgun": { "name": "샷건",     "damage": 12,  "fireDelayMs": 800,  "magazine": 6,  "reloadMs": 2400, "pellets": 8, "spread": 0.06,  "range": 45,  "auto": false },
+  "smg":     { "name": "SMG",      "damage": 12,  "fireDelayMs": 80,   "magazine": 40, "reloadMs": 1600, "pellets": 1, "spread": 0.028, "range": 90,  "auto": true },
+  "sniper":  { "name": "스나이퍼", "damage": 100, "fireDelayMs": 1500, "magazine": 5,  "reloadMs": 2600, "pellets": 1, "spread": 0.001, "range": 400, "auto": false }
+}
